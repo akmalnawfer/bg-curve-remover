@@ -6,10 +6,12 @@
     <title>bg-curve-remover demo</title>
     <style>
       :root {
-        --bg-a: #f5f7ff;
-        --bg-b: #e7fff5;
+        --bg-a: #e9f6ff;
+        --bg-b: #ebfff2;
         --ink: #0f172a;
-        --accent: #1363df;
+        --muted: #475569;
+        --accent: #0060df;
+        --line: #d9e2f1;
       }
       * { box-sizing: border-box; }
       body {
@@ -20,49 +22,17 @@
                     radial-gradient(circle at 90% 80%, var(--bg-b), transparent 45%),
                     #fff;
       }
-      .wrap {
-        max-width: 980px;
-        margin: 0 auto;
-        padding: 2rem 1rem 3rem;
-      }
-      h1 { margin: 0 0 0.75rem; font-size: clamp(1.6rem, 3vw, 2.4rem); }
-      p { margin: 0 0 1rem; }
-      .controls {
-        display: flex;
-        gap: 0.75rem;
-        align-items: center;
-        margin: 1rem 0 1.5rem;
-      }
-      .btn {
-        border: 0;
-        background: var(--accent);
-        color: #fff;
-        padding: 0.65rem 1rem;
-        border-radius: 10px;
-        font-weight: 600;
-        cursor: pointer;
-        text-decoration: none;
-        display: inline-flex;
-      }
-      .grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-        gap: 1rem;
-      }
-      .card {
-        border: 1px solid #dbe2f5;
-        border-radius: 16px;
-        background: #fff;
-        padding: 0.75rem;
-      }
+      .wrap { max-width: 1120px; margin: 0 auto; padding: 2rem 1rem 3rem; }
+      h1 { margin: 0 0 0.6rem; text-align: center; font-size: clamp(1.7rem, 3vw, 2.5rem); }
+      .lead { text-align: center; color: var(--muted); margin: 0 auto 1.2rem; max-width: 720px; }
+
+      .panes { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+      .card { border: 1px solid var(--line); border-radius: 16px; background: #fff; padding: 0.75rem; }
+      .card h3 { margin: 0 0 0.55rem; }
+
       .stage {
-        width: 100%;
-        min-height: 280px;
-        display: grid;
-        place-items: center;
-        border-radius: 10px;
-        border: 2px dashed transparent;
-        transition: border-color 0.15s ease, background-color 0.15s ease;
+        width: 100%; min-height: 360px; display: grid; place-items: center;
+        border-radius: 12px; position: relative; overflow: hidden;
         background-image: linear-gradient(45deg, #f1f5f9 25%, transparent 25%),
                           linear-gradient(-45deg, #f1f5f9 25%, transparent 25%),
                           linear-gradient(45deg, transparent 75%, #f1f5f9 75%),
@@ -70,43 +40,58 @@
         background-size: 20px 20px;
         background-position: 0 0, 0 10px, 10px -10px, -10px 0;
       }
-      .stage.drop-active {
-        border-color: #1363df;
-        background-color: #eff6ff;
+      .upload {
+        border: 2px dashed #b8c7e6;
+        transition: border-color .15s ease, background-color .15s ease;
+        cursor: pointer;
       }
-      .stage.clickable { cursor: pointer; }
-      img { max-width: 100%; max-height: 420px; object-fit: contain; }
-      #status { font-size: 0.95rem; color: #334155; }
-      .hint {
-        color: #475569;
-        font-size: 0.9rem;
-        text-align: center;
-        padding: 0.5rem;
+      .upload.drop-active { border-color: var(--accent); background-color: #eff6ff; }
+      img { max-width: 100%; max-height: 520px; object-fit: contain; }
+      .hint, .empty { color: var(--muted); text-align: center; padding: .5rem; }
+      .status { margin: .9rem 0 .2rem; text-align: center; color: #334155; font-size: .95rem; }
+      .controls { display: flex; justify-content: center; margin-top: .7rem; }
+      .btn {
+        border: 0; background: var(--accent); color: #fff; padding: .7rem 1.05rem;
+        border-radius: 10px; font-weight: 600; text-decoration: none; display: inline-flex;
       }
+      .loader {
+        position: absolute; inset: 0; display: none; place-items: center;
+        background: rgba(255,255,255,.84); backdrop-filter: blur(2px);
+      }
+      .loader.active { display: grid; }
+      .spinner {
+        width: 46px; height: 46px; border: 4px solid #dbeafe; border-top-color: var(--accent);
+        border-radius: 50%; animation: spin .8s linear infinite;
+      }
+      @keyframes spin { to { transform: rotate(360deg); } }
       .hidden { display: none !important; }
+      @media (max-width: 840px) { .panes { grid-template-columns: 1fr; } }
     </style>
   </head>
   <body>
     <main class="wrap">
-      <h1>bg-curve-remover demo</h1>
-      <p>Click or drop an image in the Original panel. Background removal runs automatically.</p>
-      <div class="controls">
-        <a id="download" class="btn hidden" download="cutout.png">Download PNG</a>
-      </div>
+      <h1>bg-curve-remover</h1>
+      <p class="lead">Upload on the left, get transparent result on the right. Processing starts automatically.</p>
+
       <input id="file" class="hidden" type="file" accept="image/*" />
-      <p id="status">Click the Original panel or drop an image there.</p>
-      <section class="grid">
+
+      <section class="panes">
         <article class="card">
-          <h3>Original</h3>
-          <div id="drop-zone" class="stage clickable" role="button" tabindex="0" aria-label="Upload image">
-            <img id="original" alt="Original preview" />
-            <p id="drop-hint" class="hint">Click to upload or drag and drop image</p>
+          <h3>Upload</h3>
+          <div id="drop-zone" class="stage upload" role="button" tabindex="0" aria-label="Upload image">
+            <img id="original" class="hidden" alt="Original preview" />
+            <p id="hint" class="hint">Click or drag an image here</p>
+            <div id="loader" class="loader"><div class="spinner"></div></div>
           </div>
+          <p id="status" class="status">Choose an image to start.</p>
+          <div class="controls"><a id="download" class="btn hidden" download="cutout.png">Download PNG</a></div>
         </article>
+
         <article class="card">
-          <h3>Result</h3>
+          <h3>Preview</h3>
           <div class="stage">
-            <img id="result" alt="Background removed result" />
+            <img id="result" class="hidden" alt="Background removed result" />
+            <p id="result-empty" class="empty">Processed image will appear here</p>
           </div>
         </article>
       </section>

@@ -43,11 +43,31 @@ After pushing to `main` and enabling GitHub Pages (source: GitHub Actions), your
 
 `https://<your-github-username>.github.io/bg-curve-remover/`
 
-## npm release
+## npm release (manual)
 
-1. Create an npm access token and save it as repository secret `NPM_TOKEN`.
-2. Create a GitHub Release (or run workflow manually).
-3. `.github/workflows/publish-npm.yml` publishes the package.
+1. Log in to npm from your terminal:
+
+```bash
+npm login
+```
+
+2. Bump package version:
+
+```bash
+npm version patch
+```
+
+3. Publish manually:
+
+```bash
+npm publish --access public
+```
+
+4. Push commit + tag:
+
+```bash
+git push && git push --tags
+```
 
 ## Notes
 
