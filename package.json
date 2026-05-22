@@ -1,0 +1,42 @@
+{
+  "name": "bg-curve-remover",
+  "version": "0.1.0",
+  "description": "Pure JavaScript background remover with curve-aware alpha refinement for browser and Node.js.",
+  "type": "module",
+  "main": "./src/index.js",
+  "module": "./src/index.js",
+  "exports": {
+    ".": {
+      "import": "./src/index.js",
+      "default": "./src/index.js"
+    }
+  },
+  "files": [
+    "src",
+    "README.md",
+    "LICENSE"
+  ],
+  "keywords": [
+    "background-removal",
+    "remove-background",
+    "image-processing",
+    "segmentation",
+    "javascript"
+  ],
+  "author": "",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "demo": "vite --config demo/vite.config.js",
+    "build:demo": "vite build --config demo/vite.config.js",
+    "preview:demo": "vite preview --config demo/vite.config.js"
+  },
+  "dependencies": {
+    "@imgly/background-removal": "^1.5.8"
+  },
+  "devDependencies": {
+    "vite": "^5.4.19"
+  }
+}
