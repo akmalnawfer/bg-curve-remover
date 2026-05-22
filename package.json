@@ -1,6 +1,6 @@
 {
   "name": "bg-curve-remover",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Pure JavaScript background remover with curve-aware alpha refinement for browser and Node.js.",
   "type": "module",
   "main": "./src/index.js",
