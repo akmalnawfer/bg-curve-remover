@@ -28,7 +28,14 @@
 
       .panes { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
       .card { border: 1px solid var(--line); border-radius: 16px; background: #fff; padding: 0.75rem; }
-      .card h3 { margin: 0 0 0.55rem; }
+      .card-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.6rem;
+        margin: 0 0 0.55rem;
+      }
+      .card h3 { margin: 0; }
 
       .stage {
         width: 100%; min-height: 360px; display: grid; place-items: center;
@@ -49,10 +56,10 @@
       img { max-width: 100%; max-height: 520px; object-fit: contain; }
       .hint, .empty { color: var(--muted); text-align: center; padding: .5rem; }
       .status { margin: .9rem 0 .2rem; text-align: center; color: #334155; font-size: .95rem; }
-      .controls { display: flex; justify-content: center; margin-top: .7rem; }
       .btn {
-        border: 0; background: var(--accent); color: #fff; padding: .7rem 1.05rem;
+        border: 0; background: var(--accent); color: #fff; padding: .58rem .9rem;
         border-radius: 10px; font-weight: 600; text-decoration: none; display: inline-flex;
+        font-size: .88rem;
       }
       .loader {
         position: absolute; inset: 0; display: none; place-items: center;
@@ -77,18 +84,20 @@
 
       <section class="panes">
         <article class="card">
-          <h3>Upload</h3>
+          <div class="card-head"><h3>Upload</h3></div>
           <div id="drop-zone" class="stage upload" role="button" tabindex="0" aria-label="Upload image">
             <img id="original" class="hidden" alt="Original preview" />
             <p id="hint" class="hint">Click or drag an image here</p>
             <div id="loader" class="loader"><div class="spinner"></div></div>
           </div>
           <p id="status" class="status">Choose an image to start.</p>
-          <div class="controls"><a id="download" class="btn hidden" download="cutout.png">Download PNG</a></div>
         </article>
 
         <article class="card">
-          <h3>Preview</h3>
+          <div class="card-head">
+            <h3>Preview</h3>
+            <a id="download" class="btn hidden" download="cutout.webp">Download</a>
+          </div>
           <div class="stage">
             <img id="result" class="hidden" alt="Background removed result" />
             <p id="result-empty" class="empty">Processed image will appear here</p>

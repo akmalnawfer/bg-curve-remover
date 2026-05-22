@@ -1,8 +1,12 @@
 # bg-curve-remover
 
-A pure JavaScript background remover for browser and Node.js workflows.
+A pure JavaScript background remover for browser workflows.
 
-`bg-curve-remover` removes image backgrounds using AI segmentation and then applies alpha cleanup to reduce leftover noise around curves and small interior/exterior background fragments.
+`bg-curve-remover` removes image backgrounds using an in-house, browser-side extraction pipeline:
+- border color modeling
+- background flood-growth segmentation
+- curve/edge alpha softening
+- small artifact cleanup
 
 ## Install
 
@@ -27,14 +31,14 @@ document.querySelector('#preview').src = resultUrl;
 Removes the background and returns a processed image object.
 
 - Browser usage: returns a `Blob` (PNG by default)
-- Input types supported by the underlying model include `File`, `Blob`, URL input, and binary buffers
+- Input types: `File`, `Blob`, URL string
 
 ```js
 import { removeBackground } from 'bg-curve-remover';
 
 const outputBlob = await removeBackground(file, {
   output: { type: 'image/png', quality: 0.98 },
-  alphaCleanup: { alphaThreshold: 18, minRegionSize: 28 }
+  extraction: { edgeSoftness: 26, minSubjectRegion: 120 }
 });
 ```
 
@@ -65,18 +69,29 @@ Output image configuration.
 { output: { type: 'image/png', quality: 0.98 } }
 ```
 
-### `alphaCleanup`
+### `extraction`
 
-Post-processing cleanup for better cut edges and reduced artifacts.
+Controls your in-house subject extraction pipeline.
 
-- `alphaThreshold` (default `18`): pixels with low alpha below this threshold are removed
-- `minRegionSize` (default `28`): tiny connected alpha regions below this size are removed
+- `borderSampleStep` (default `2`): border sampling stride for background color model
+- `bgDistancePercentile` (default `0.35`): base threshold from color-distance distribution
+- `bgGrowMultiplier` (default `1.25`): expansion factor when flood-filling background
+- `minSubjectRegion` (default `120`): remove tiny foreground islands
+- `edgeSoftness` (default `26`): feathering amount on extracted edges
 
 ```js
-{ alphaCleanup: { alphaThreshold: 20, minRegionSize: 36 } }
+{
+  extraction: {
+    borderSampleStep: 2,
+    bgDistancePercentile: 0.35,
+    bgGrowMultiplier: 1.25,
+    minSubjectRegion: 120,
+    edgeSoftness: 26
+  }
+}
 ```
 
-This helps remove leftover stray pixels both outside and inside the subject region after segmentation.
+This helps remove leftover stray pixels both outside and inside the subject region while preserving smoother edges.
 
 ## Demo
 
@@ -119,6 +134,7 @@ URL.revokeObjectURL(url);
 - First run may be slower while model assets are loaded.
 - PNG output is recommended for transparent backgrounds.
 - Complex hair/fur/translucent edges can still benefit from manual touch-up depending on source image quality.
+- This package does not call your backend services; extraction runs locally in-browser.
 
 ## License
 
