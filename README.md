@@ -114,26 +114,6 @@ a.click();
 URL.revokeObjectURL(url);
 ```
 
-## Manual npm Release
-
-```bash
-npm login
-npm version patch
-npm publish --access public
-```
-
-Then push release commit/tag:
-
-```bash
-git push && git push --tags
-```
-
-If npm asks for OTP:
-
-```bash
-npm publish --access public --otp=<6-digit-code>
-```
-
 ## Notes
 
 - First run may be slower while model assets are loaded.
